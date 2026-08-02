@@ -15,9 +15,18 @@ const protect = asyncHandler(async (req, res, next) => {
     throw new AppError('Not authorized, no token provided', 401);
   }
 
-  const decoded = verifyToken(token);
-  const user = await User.findById(decoded.id);
+  let decoded;
+  try {
+    decoded = verifyToken(token);
+  } catch (err) {
+    if (err.name === 'TokenExpiredError' || err.name === 'JsonWebTokenError') {
+      throw new AppError('Not authorized, invalid or expired token', 401);
+    }
+    // anything else (e.g. missing JWT_SECRET) is a real server error
+    throw err;
+  }
 
+  const user = await User.findById(decoded.id);
   if (!user) {
     throw new AppError('Not authorized, user no longer exists', 401);
   }

@@ -2,7 +2,7 @@ const logger = require('../config/logger');
 
 function errorHandler(err, req, res, next) {
   let statusCode = err.statusCode || 500;
-  let message = err.message || 'Something went wrong';
+  let message = err.isOperational ? err.message : 'Something went wrong';
 
   // bad mongoose ObjectId
   if (err.name === 'CastError') {
@@ -26,7 +26,7 @@ function errorHandler(err, req, res, next) {
 
   logger.error(
     { err, statusCode, path: req.originalUrl, method: req.method },
-    message
+    err.message || message
   );
 
   const response = { success: false, message };

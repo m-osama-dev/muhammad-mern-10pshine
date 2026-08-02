@@ -3,7 +3,7 @@
 Plain Node.js + Express + MongoDB (Mongoose) + JWT + Pino.
 
 ## Structure
-```
+```text
 src/
   config/       - db connection, logger
   controllers/  - auth + notes logic

@@ -4,8 +4,16 @@ const { generateToken } = require('../utils/generateToken');
 const asyncHandler = require('../middleware/asyncHandler');
 const logger = require('../config/logger');
 
+function normalizeEmail(email) {
+  if (typeof email !== 'string') {
+    throw new AppError('Email must be a valid string', 400);
+  }
+  return email.trim().toLowerCase();
+}
+
 const signup = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, password } = req.body;
+  const email = normalizeEmail(req.body.email);
 
   if (!name || !email || !password) {
     throw new AppError('Name, email and password are all required', 400);
@@ -29,7 +37,8 @@ const signup = asyncHandler(async (req, res) => {
 });
 
 const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { password } = req.body;
+  const email = normalizeEmail(req.body.email);
 
   if (!email || !password) {
     throw new AppError('Email and password are required', 400);
@@ -57,8 +66,6 @@ const login = asyncHandler(async (req, res) => {
 });
 
 const logout = asyncHandler(async (req, res) => {
-  // token is stateless (JWT), so there's nothing to invalidate server-side.
-  // this endpoint mostly exists for logging + symmetry with signup/login.
   logger.info({ userId: req.user?.id }, 'User logged out');
   res.status(200).json({ success: true, message: 'Logged out successfully' });
 });
@@ -81,19 +88,22 @@ const getMe = asyncHandler(async (req, res) => {
 });
 
 const updateMe = asyncHandler(async (req, res) => {
-  const { name, email } = req.body;
+  const { name } = req.body;
 
   const user = await User.findById(req.user.id);
   if (!user) {
     throw new AppError('User not found', 404);
   }
 
-  if (email && email !== user.email) {
-    const existing = await User.findOne({ email });
-    if (existing) {
-      throw new AppError('That email is already in use', 400);
+  if (req.body.email !== undefined) {
+    const email = normalizeEmail(req.body.email);
+    if (email !== user.email) {
+      const existing = await User.findOne({ email });
+      if (existing) {
+        throw new AppError('That email is already in use', 400);
+      }
+      user.email = email;
     }
-    user.email = email;
   }
 
   if (name) {

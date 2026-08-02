@@ -13,6 +13,11 @@ async function registerAndLogin(email) {
     email,
     password: 'password123',
   });
+
+  if (res.status !== 201 || !res.body.token) {
+    throw new Error(`Signup failed for ${email}: ${res.status} ${JSON.stringify(res.body)}`);
+  }
+
   return res.body.token;
 }
 
