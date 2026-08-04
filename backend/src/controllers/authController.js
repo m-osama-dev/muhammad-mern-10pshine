@@ -66,7 +66,9 @@ const login = asyncHandler(async (req, res) => {
 });
 
 const logout = asyncHandler(async (req, res) => {
-  logger.info({ userId: req.user?.id }, 'User logged out');
+  await User.findByIdAndUpdate(req.user.id, { tokenValidAfter: new Date() });
+
+  logger.info({ userId: req.user.id }, 'User logged out');
   res.status(200).json({ success: true, message: 'Logged out successfully' });
 });
 
