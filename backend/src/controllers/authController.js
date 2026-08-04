@@ -66,7 +66,12 @@ const login = asyncHandler(async (req, res) => {
 });
 
 const logout = asyncHandler(async (req, res) => {
-  await User.findByIdAndUpdate(req.user.id, { tokenValidAfter: new Date() });
+  // round up to the start of the next full second, since JWT 'iat' only
+  // has second precision — avoids same-second tokens slipping through
+  // or getting incorrectly rejected right at the logout boundary
+  const cutoff = new Date(Math.ceil(Date.now() / 1000) * 1000);
+
+  await User.findByIdAndUpdate(req.user.id, { tokenValidAfter: cutoff });
 
   logger.info({ userId: req.user.id }, 'User logged out');
   res.status(200).json({ success: true, message: 'Logged out successfully' });
