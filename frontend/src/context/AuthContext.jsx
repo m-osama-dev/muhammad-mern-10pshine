@@ -68,9 +68,12 @@ export function AuthProvider({ children }) {
     }
   }
 
-  async function logout() {
+ async function logout() {
     try {
       await api.logout();
+    } catch {
+      // server-side logout failing (e.g. network issue) shouldn't block
+      // the user from being logged out locally
     } finally {
       localStorage.removeItem(TOKEN_KEY);
       setUser(null);

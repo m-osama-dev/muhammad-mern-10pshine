@@ -62,9 +62,12 @@ export default function Profile() {
     }
   }
 
-  async function handleLogout() {
+ async function handleLogout() {
     try {
       await logout();
+    } catch {
+      // even if server-side logout fails, we still proceed to
+      // clear the session locally and send the user to login
     } finally {
       navigate('/login');
     }
