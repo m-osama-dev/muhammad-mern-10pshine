@@ -38,7 +38,7 @@ export default function Signup() {
     setSubmitting(true);
     try {
       await signup({ name: trimmedName, email: trimmedEmail, password });
-      navigate("/profile");
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message);
     } finally {

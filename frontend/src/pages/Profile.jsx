@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function initials(name) {
@@ -78,13 +78,19 @@ export default function Profile() {
 
       {/* Navbar */}
       <nav className="flex items-center justify-between border-b border-paper-line bg-white px-8 py-4 dark:border-slate-800 dark:bg-ink-soft">
-        <div className="flex items-center gap-2.5">
+        <Link to="/dashboard" className="flex items-center gap-2.5">
           <div className="flex h-7 w-7 items-center justify-center rounded-full border border-gold/60 font-mono text-xs text-gold">
             I
           </div>
           <span className="font-display text-lg text-ink dark:text-white">Inkwell</span>
-        </div>
+        </Link>
         <div className="flex items-center gap-3">
+          <Link
+            to="/dashboard"
+            className="text-sm text-ink-muted hover:text-ink dark:text-slate-400 dark:hover:text-white transition"
+          >
+            ← Dashboard
+          </Link>
           <button
             type="button"
             onClick={() => setDark(!dark)}
