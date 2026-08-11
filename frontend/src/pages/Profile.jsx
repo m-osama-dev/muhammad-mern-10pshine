@@ -62,7 +62,7 @@ export default function Profile() {
     }
   }
 
- async function handleLogout() {
+  async function handleLogout() {
     try {
       await logout();
     } catch {
@@ -75,19 +75,18 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-paper font-body dark:bg-ink transition-colors">
-
       {/* Navbar */}
-      <nav className="flex items-center justify-between border-b border-paper-line bg-white px-8 py-4 dark:border-slate-800 dark:bg-ink-soft">
+      <nav className="flex flex-wrap items-center justify-between gap-3 border-b border-paper-line bg-white px-4 py-3 sm:px-8 sm:py-4 dark:border-slate-800 dark:bg-ink-soft">
         <Link to="/dashboard" className="flex items-center gap-2.5">
           <div className="flex h-7 w-7 items-center justify-center rounded-full border border-gold/60 font-mono text-xs text-gold">
             I
           </div>
           <span className="font-display text-lg text-ink dark:text-white">Inkwell</span>
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3">
           <Link
             to="/dashboard"
-            className="text-sm text-ink-muted hover:text-ink dark:text-slate-400 dark:hover:text-white transition"
+            className="text-xs text-ink-muted hover:text-ink dark:text-slate-400 dark:hover:text-white transition sm:text-sm"
           >
             ← Dashboard
           </Link>
@@ -102,37 +101,41 @@ export default function Profile() {
           <button
             type="button"
             onClick={handleLogout}
-            className="rounded-lg border border-paper-line px-4 py-1.5 text-sm text-ink-muted hover:border-danger hover:text-danger dark:border-slate-700 dark:text-slate-400 dark:hover:border-danger dark:hover:text-danger transition"
+            className="rounded-lg border border-paper-line px-3 py-1.5 text-xs text-ink-muted hover:border-danger hover:text-danger dark:border-slate-700 dark:text-slate-400 dark:hover:border-danger dark:hover:text-danger transition sm:px-4 sm:text-sm"
           >
             Log out
           </button>
         </div>
       </nav>
 
-      <main className="mx-auto max-w-xl px-6 py-12">
-
+      <main className="mx-auto max-w-xl px-4 py-8 sm:px-6 sm:py-12">
         {/* Profile card */}
-        <div className="rounded-2xl border border-paper-line bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-ink-soft">
-
+        <div className="rounded-2xl border border-paper-line bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-ink-soft sm:p-8">
           {/* Avatar + name header */}
-          <div className="flex items-center gap-5 border-b border-paper-line pb-6 dark:border-slate-700">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-ink dark:bg-slate-700 font-display text-xl text-gold">
+          <div className="flex items-center gap-4 border-b border-paper-line pb-5 dark:border-slate-700 sm:gap-5 sm:pb-6">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ink font-display text-lg text-gold dark:bg-slate-700 sm:h-14 sm:w-14 sm:text-xl">
               {initials(user.name)}
             </div>
-            <div>
-              <h2 className="font-display text-xl text-ink dark:text-white">{user.name}</h2>
-              <p className="mt-0.5 text-sm text-ink-muted dark:text-slate-400">{user.email}</p>
+            <div className="min-w-0">
+              <h2 className="truncate font-display text-lg text-ink dark:text-white sm:text-xl">{user.name}</h2>
+              <p className="mt-0.5 truncate text-sm text-ink-muted dark:text-slate-400">{user.email}</p>
             </div>
           </div>
 
           {/* Feedback messages */}
           {error && (
-            <div role="alert" className="mt-5 rounded-lg border border-danger/20 bg-danger-light dark:bg-danger/10 px-4 py-3 text-sm text-danger">
+            <div
+              role="alert"
+              className="mt-5 rounded-lg border border-danger/20 bg-danger-light px-4 py-3 text-sm text-danger dark:bg-danger/10"
+            >
               {error}
             </div>
           )}
           {success && (
-            <div role="status" className="mt-5 rounded-lg border border-teal/20 bg-teal/5 px-4 py-3 text-sm text-teal">
+            <div
+              role="status"
+              className="mt-5 rounded-lg border border-teal/20 bg-teal/5 px-4 py-3 text-sm text-teal"
+            >
               {success}
             </div>
           )}
@@ -149,30 +152,34 @@ export default function Profile() {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="rounded-xl border border-paper-line bg-paper px-4 py-3 text-sm text-ink focus:border-gold focus:outline-none dark:border-slate-700 dark:bg-ink dark:text-white dark:focus:border-gold transition"
+                  className="w-full rounded-xl border border-paper-line bg-paper px-4 py-3 text-sm text-ink focus:border-gold focus:outline-none dark:border-slate-700 dark:bg-ink dark:text-white dark:focus:border-gold transition"
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-ink dark:text-slate-200">Email</label>
-                <div className="rounded-xl border border-paper-line bg-paper-soft px-4 py-3 text-sm text-ink-muted dark:border-slate-700 dark:bg-ink dark:text-slate-500 cursor-not-allowed">
+                <div className="break-all rounded-xl border border-paper-line bg-paper-soft px-4 py-3 text-sm text-ink-muted dark:border-slate-700 dark:bg-ink dark:text-slate-500 cursor-not-allowed">
                   {user.email}
                   <span className="ml-2 text-xs text-stone-300 dark:text-slate-600">(cannot be changed)</span>
                 </div>
               </div>
 
-              <div className="flex gap-3 pt-1">
+              <div className="flex flex-col gap-3 pt-1 sm:flex-row">
                 <button
                   type="submit"
                   disabled={saving}
-                  className="rounded-xl bg-gold px-5 py-2.5 text-sm font-semibold text-white hover:bg-gold-dark disabled:opacity-50 transition"
+                  className="w-full rounded-xl bg-gold px-5 py-2.5 text-sm font-semibold text-white hover:bg-gold-dark disabled:opacity-50 transition sm:w-auto"
                 >
                   {saving ? 'Saving…' : 'Save changes'}
                 </button>
                 <button
                   type="button"
-                  onClick={() => { setEditing(false); setName(user.name); setError(''); }}
-                  className="rounded-xl border border-paper-line px-5 py-2.5 text-sm text-ink-muted hover:border-gold hover:text-ink dark:border-slate-700 dark:text-slate-400 transition"
+                  onClick={() => {
+                    setEditing(false);
+                    setName(user.name);
+                    setError('');
+                  }}
+                  className="w-full rounded-xl border border-paper-line px-5 py-2.5 text-sm text-ink-muted hover:border-gold hover:text-ink dark:border-slate-700 dark:text-slate-400 transition sm:w-auto"
                 >
                   Cancel
                 </button>
@@ -186,7 +193,7 @@ export default function Profile() {
               <button
                 type="button"
                 onClick={() => setEditing(true)}
-                className="mt-5 rounded-xl border border-paper-line px-5 py-2.5 text-sm text-ink-muted hover:border-gold hover:text-ink dark:border-slate-700 dark:text-slate-400 dark:hover:text-white transition"
+                className="mt-5 w-full rounded-xl border border-paper-line px-5 py-2.5 text-sm text-ink-muted hover:border-gold hover:text-ink dark:border-slate-700 dark:text-slate-400 dark:hover:text-white transition sm:w-auto"
               >
                 Edit profile
               </button>

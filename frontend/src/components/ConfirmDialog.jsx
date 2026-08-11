@@ -1,16 +1,47 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 export default function ConfirmDialog({ open, title, message, confirmLabel = 'Confirm', onConfirm, onCancel }) {
+  const dialogRef = useRef(null);
+  const cancelButtonRef = useRef(null);
+  const previouslyFocusedElement = useRef(null);
+
   useEffect(() => {
     if (!open) return;
 
+    previouslyFocusedElement.current = document.activeElement;
+    cancelButtonRef.current?.focus();
+
     function handleKeyDown(e) {
-      if (e.key === 'Escape') onCancel();
+      if (e.key === 'Escape') {
+        onCancel();
+        return;
+      }
+
+      if (e.key === 'Tab' && dialogRef.current) {
+        const focusable = dialogRef.current.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     }
 
     document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      previouslyFocusedElement.current?.focus();
+    };
   }, [open, onCancel]);
 
   if (!open) return null;
@@ -21,6 +52,7 @@ export default function ConfirmDialog({ open, title, message, confirmLabel = 'Co
       onClick={onCancel}
     >
       <div
+        ref={dialogRef}
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
@@ -34,6 +66,7 @@ export default function ConfirmDialog({ open, title, message, confirmLabel = 'Co
 
         <div className="mt-6 flex justify-end gap-3">
           <button
+            ref={cancelButtonRef}
             type="button"
             onClick={onCancel}
             className="rounded-xl border border-paper-line px-4 py-2 text-sm text-ink-muted hover:border-gold hover:text-ink dark:border-slate-700 dark:text-slate-400 dark:hover:text-white transition"

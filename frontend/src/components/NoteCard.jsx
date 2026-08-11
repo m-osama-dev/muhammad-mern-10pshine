@@ -25,7 +25,11 @@ export default function NoteCard({ note, onOpen, onDelete }) {
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
-        if (e.key === 'Enter') onOpen(note._id);
+        if (e.target !== e.currentTarget) return;
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onOpen(note._id);
+        }
       }}
       className="group cursor-pointer rounded-2xl border border-paper-line bg-white p-5 transition hover:border-gold hover:shadow-md dark:border-slate-800 dark:bg-ink-soft dark:hover:border-gold"
     >
