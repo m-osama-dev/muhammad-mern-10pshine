@@ -35,3 +35,43 @@ body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
 }
+
+.editor-quill .ql-toolbar {
+  border-color: var(--color-paper-line);
+  border-radius: 0.75rem 0.75rem 0 0;
+}
+
+.editor-quill .ql-container {
+  border-color: var(--color-paper-line);
+  border-radius: 0 0 0.75rem 0.75rem;
+  min-height: 260px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+}
+
+.dark .editor-quill .ql-toolbar {
+  border-color: #334155;
+  background: #1e293b;
+}
+
+.dark .editor-quill .ql-container {
+  border-color: #334155;
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+.dark .editor-quill .ql-stroke {
+  stroke: #cbd5e1;
+}
+
+.dark .editor-quill .ql-fill {
+  fill: #cbd5e1;
+}
+
+.dark .editor-quill .ql-picker {
+  color: #cbd5e1;
+}
+
+.dark .editor-quill .ql-editor.ql-blank::before {
+  color: #64748b;
+}

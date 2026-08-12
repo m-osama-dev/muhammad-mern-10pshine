@@ -29,7 +29,7 @@ export default function Login() {
     setSubmitting(true);
     try {
       await login({ email, password });
-      navigate('/profile');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message);
     } finally {

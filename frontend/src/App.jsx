@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
+import Dashboard from './pages/Dashboard';
+import NoteEditor from './pages/NoteEditor';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -40,7 +42,23 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notes/:id"
+            element={
+              <ProtectedRoute>
+                <NoteEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
