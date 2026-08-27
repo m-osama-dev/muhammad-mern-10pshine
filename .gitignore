@@ -24,3 +24,5 @@ coverage/
 
 # Vite cache
 .vite/
+# SonarQube
+.scannerwork/

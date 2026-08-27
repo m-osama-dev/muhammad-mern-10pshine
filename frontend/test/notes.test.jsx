@@ -10,6 +10,12 @@ import * as noteService from '../src/services/noteService';
 jest.mock('../src/services/api');
 jest.mock('../src/services/noteService');
 
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+}));
+
 function renderWithProviders(ui, { route = '/dashboard' } = {}) {
   return render(
     <MemoryRouter
@@ -60,7 +66,7 @@ describe('Dashboard page', () => {
     expect(screen.getByText('Second note')).toBeInTheDocument();
   });
 
-it('deletes a note after confirming in the dialog', async () => {
+  it('deletes a note after confirming in the dialog', async () => {
     noteService.getNotes.mockResolvedValue({
       success: true,
       count: 1,
@@ -110,5 +116,117 @@ it('deletes a note after confirming in the dialog', async () => {
     renderWithProviders(<Dashboard />);
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/network error/i);
+  });
+
+  it('shows user name and email in the dropdown menu', async () => {
+    noteService.getNotes.mockResolvedValue({ success: true, count: 0, data: [] });
+
+    const user = userEvent.setup();
+    renderWithProviders(<Dashboard />);
+
+    await screen.findByText(/no notes yet/i);
+    const menuButton = document.querySelector('[aria-haspopup="menu"]');
+    await user.click(menuButton);
+
+    expect(screen.getByText('Test User')).toBeInTheDocument();
+    expect(screen.getByText('test@example.com')).toBeInTheDocument();
+  });
+
+  it('navigates to Profile from the dropdown menu', async () => {
+    noteService.getNotes.mockResolvedValue({ success: true, count: 0, data: [] });
+
+    const user = userEvent.setup();
+    renderWithProviders(<Dashboard />);
+
+    await screen.findByText(/no notes yet/i);
+    const menuButton = document.querySelector('[aria-haspopup="menu"]');
+    await user.click(menuButton);
+    await user.click(screen.getByRole('menuitem', { name: /profile/i }));
+
+    expect(mockNavigate).toHaveBeenCalledWith('/profile');
+  });
+
+  it('logs out from the dropdown menu and navigates to login', async () => {
+    noteService.getNotes.mockResolvedValue({ success: true, count: 0, data: [] });
+    api.logout.mockResolvedValue({ success: true });
+
+    const user = userEvent.setup();
+    renderWithProviders(<Dashboard />);
+
+    await screen.findByText(/no notes yet/i);
+    const menuButton = document.querySelector('[aria-haspopup="menu"]');
+    await user.click(menuButton);
+    await user.click(screen.getByRole('menuitem', { name: /log out/i }));
+
+    await waitFor(() => {
+      expect(api.logout).toHaveBeenCalled();
+    });
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/login');
+    });
+  });
+
+  it('still navigates to login if logout API call fails', async () => {
+    noteService.getNotes.mockResolvedValue({ success: true, count: 0, data: [] });
+    api.logout.mockRejectedValue(new Error('network error'));
+
+    const user = userEvent.setup();
+    renderWithProviders(<Dashboard />);
+
+    await screen.findByText(/no notes yet/i);
+    const menuButton = document.querySelector('[aria-haspopup="menu"]');
+    await user.click(menuButton);
+    await user.click(screen.getByRole('menuitem', { name: /log out/i }));
+
+    await waitFor(() => {
+      expect(api.logout).toHaveBeenCalled();
+    });
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/login');
+    });
+  });
+
+  it('toggles dark mode when the dark mode button is clicked', async () => {
+    noteService.getNotes.mockResolvedValue({ success: true, count: 0, data: [] });
+
+    const user = userEvent.setup();
+    renderWithProviders(<Dashboard />);
+
+    await screen.findByText(/no notes yet/i);
+    const toggleButton = screen.getByRole('button', { name: /toggle dark mode/i });
+    const initialIcon = toggleButton.textContent;
+    await user.click(toggleButton);
+
+    expect(toggleButton.textContent).not.toBe(initialIcon);
+  });
+
+  it('navigates to the new note page when "+ New note" is clicked', async () => {
+    noteService.getNotes.mockResolvedValue({ success: true, count: 0, data: [] });
+
+    const user = userEvent.setup();
+    renderWithProviders(<Dashboard />);
+
+    await screen.findByText(/no notes yet/i);
+    await user.click(screen.getByRole('button', { name: /\+ new note/i }));
+
+    expect(mockNavigate).toHaveBeenCalledWith('/notes/new');
+  });
+
+  it('closes the menu when Escape is pressed', async () => {
+    noteService.getNotes.mockResolvedValue({ success: true, count: 0, data: [] });
+
+    const user = userEvent.setup();
+    renderWithProviders(<Dashboard />);
+
+    await screen.findByText(/no notes yet/i);
+    const menuButton = document.querySelector('[aria-haspopup="menu"]');
+    await user.click(menuButton);
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+
+    await user.keyboard('{Escape}');
+
+    await waitFor(() => {
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    });
   });
 });
